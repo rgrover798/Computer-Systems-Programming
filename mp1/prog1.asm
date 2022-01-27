@@ -103,11 +103,29 @@ GET_NEXT
 
 PRINT_HIST
 
-; you will need to insert your code to print the histogram here
+; This algorithm prints the histogram specified by values from HIST_ADDR located at x3F00 which
+; hold the number of times character have appeared in the string specified at x4000. The program
+; does this by looping through each histogram bin, starting at x3F00, and loading the value
+; specified by each bin into R3 in order to print the specified value being stored. (The value
+; being stored is calculated by the histogram code above which parses a string to calculate  
+; how many letters or other characters are in a string). The algorithm works by converting each
+; group of four binary digits into their corresponding ASCII value, and then shifting the four
+; bits over and then printing again the next four bits until the whole hex value is done printing
+;
+; Registers Used:
+; R0 is used to print newline, space, histogram bin labels, and the hex values specified by the 
+; histogram bins starting from x3F00
+; R1 is used to keep track of the amount of digits of the hex value printed so far. Once it 
+; reaches 4, the whole HEX value is printed.
+; R2 is used to keep track of the current bit that is a subset of length four of the overall hex
+; value. Once it reaches 4, the whole SUBSET OF the HEX value is printed
+; R3 is used to hold the hex value that needs to be printed along with the address of where it
+; is being printed from
+; R4 holds the exact value of the current digit being printed of the SUBSET that is in R2. This 
+; digit is then converted to it's corresponding ASCII value to be printed
+; R5 is used to keep track of the number of bins that have been printed so far as a counter
+; R6 is used to hold the ASCII values of the labels for each histogram bin being printed
 
-; do not forget to write a brief description of the approach/algorithm
-; for your implementation, list registers used in this part of the code,
-; and provide sufficient comments
 
 			LDI 	R3, HIST_ADDR 	; Load starting histogram value needed to be printed to R3
 			LD 		R5, NUM_BINS	; Load number of bins into R5
