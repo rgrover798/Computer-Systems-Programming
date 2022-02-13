@@ -20,7 +20,7 @@ int main()
   scanf("%d", &row);
 
   //print default case
-  printf("1");
+  printf("1 ");
 
   /*begin looping process, calculate k_term using equation provided and looping
   through each value in row selected except the first*/
@@ -29,7 +29,7 @@ int main()
         k_term = k_term * (row + 1 - j)/j;
     }
     //print each k_term and reset value
-    printf("%d", k_term);
+    printf("%d ", k_term);
     k_term = 1;
   }
   return 0;
