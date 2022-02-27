@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h> 
-#include <dice.h>
+#include "dice.h"
 
 /* Code to simulate rolling three six-sided dice (D6)
  * User first types in seed value
@@ -23,7 +23,7 @@ int main() {
     int thirdVal;
 
     //I/O
-    printf("Enter Seed: ");
+    printf("Enter Seed: \n");
     scanf("%d", &seedVal);
     
     //set up RNG and generate values
@@ -32,11 +32,11 @@ int main() {
 
     //print output
     if(firstVal == secondVal && secondVal == thirdVal){
-        printf("%d %d %d Triple!", &firstVal, &secondVal, &thirdVal);
+        printf("%d %d %d Triple!\n", firstVal, secondVal, thirdVal);
     } else if (firstVal == secondVal || firstVal == thirdVal || secondVal == thirdVal){
-        printf("%d %d %d Double!", &firstVal, &secondVal, &thirdVal);
+        printf("%d %d %d Double!\n", firstVal, secondVal, thirdVal);
     } else {
-        printf("%d %d %d", &firstVal, &secondVal, &thirdVal);
+        printf("%d %d %d\n", firstVal, secondVal, thirdVal);
     }
 
 
