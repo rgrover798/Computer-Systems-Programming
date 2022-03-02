@@ -123,14 +123,26 @@ int make_guess (const char guess_str[], int* one, int* two, int* three, int* fou
     int misplacedMatches = 0;
     int sol1Paired = 0, sol2Paired = 0, sol3Paired = 0, sol4Paired = 0;
 
-
     int poss2 = sscanf (guess_str, "%d%d%d%d%1s", &w, &x, &y, &z, post2);
+
+    *one = w;
+    *two = x;
+    *three = y;
+    *four = z;
+
+    if(w < 1 || w > 8 || x < 1 || x > 8 || y < 1 || y > 8 || z < 1 || z > 8){
+        printf("make_guess: invalid guess\n");
+        return 0;
+    }
 
     if(poss2 == 4){
         guess_number += 1;
 
         if(w == solution1){
             perfectMatches += 1;
+            if(sol1Paired){
+                misplacedMatches -= 1;
+            }
             sol1Paired = 1;
         } else if(w == solution2 && sol2Paired == 0){
             misplacedMatches += 1;
@@ -145,6 +157,9 @@ int make_guess (const char guess_str[], int* one, int* two, int* three, int* fou
 
         if(x == solution2){
             perfectMatches += 1;
+            if(sol2Paired){
+                misplacedMatches -= 1;
+            }
             sol2Paired = 1;
         } else if(x == solution1 && sol1Paired == 0){
             misplacedMatches += 1;
@@ -159,6 +174,9 @@ int make_guess (const char guess_str[], int* one, int* two, int* three, int* fou
 
         if(y == solution3){
             perfectMatches += 1;
+            if(sol3Paired){
+                misplacedMatches -= 1;
+            }
             sol3Paired = 1;
         } else if(y == solution1 && sol1Paired == 0){
             misplacedMatches += 1;
@@ -173,6 +191,9 @@ int make_guess (const char guess_str[], int* one, int* two, int* three, int* fou
 
         if(z == solution4){
             perfectMatches += 1;
+            if(sol4Paired){
+                misplacedMatches -= 1;
+            }
             sol4Paired = 1;
         } else if(z == solution1 && sol1Paired == 0){
             misplacedMatches += 1;
