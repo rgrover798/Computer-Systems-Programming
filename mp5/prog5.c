@@ -47,16 +47,20 @@ static int solution4;
  */
 int set_seed (const char seed_str[]){   
 
+    //declare variables to parse input
     int seed;
     char post[2];
 
+    //parse input to search if input is valid
     int poss = sscanf(seed_str, "%d%1s", &seed, post);
     
+    //if only one integer seed value is inputted, begin generating random numbers
     if(poss == 1){
         srand(seed);
         return 1;
     } 
     
+    //else invalid seed
     printf("set_seed: invalid seed\n");
     return 0;
 }
@@ -80,11 +84,13 @@ int set_seed (const char seed_str[]){
 void
 start_game (int* one, int* two, int* three, int* four)
 {
+    //set one, two, three, four to random num between 1-8
     *one = rand() % 8 + 1;
     *two = rand() % 8 + 1;
     *three = rand() % 8 + 1;
     *four = rand() % 8 + 1;
 
+    //set solutions to one, two, three, four to save values globally
     solution1 = *one;
     solution2 = *two;
     solution3 = *three;
@@ -117,24 +123,32 @@ start_game (int* one, int* two, int* three, int* four)
  */
 int make_guess (const char guess_str[], int* one, int* two, int* three, int* four){
 
+    //declare variable w, x, y, z to hold guess from user input
     int w, x, y, z;
+    //declare post2 to check for any additional incorrect input
     char post2[2];
+    //declare and initialize variables to keep track of matches and their types
     int perfectMatches = 0;
     int misplacedMatches = 0;
+    //declare and initialize booleans for whether the solutions are paired to a guess
     int sol1Paired = 0, sol2Paired = 0, sol3Paired = 0, sol4Paired = 0;
 
+    //parse user input of guess to check validity of input
     int poss2 = sscanf (guess_str, "%d%d%d%d%1s", &w, &x, &y, &z, post2);
 
+    //set pointers equal to solution so other file can reference solution set
     *one = w;
     *two = x;
     *three = y;
     *four = z;
 
+    //test if w, x, y, z are valid integers in the range 1-8 of the guessing range
     if(w < 1 || w > 8 || x < 1 || x > 8 || y < 1 || y > 8 || z < 1 || z > 8){
         printf("make_guess: invalid guess\n");
         return 0;
     }
 
+    // nested if/else statements to first check for perfect matches, then misplaced ones
     if(poss2 == 4){
         guess_number += 1;
 
@@ -206,10 +220,12 @@ int make_guess (const char guess_str[], int* one, int* two, int* three, int* fou
             sol3Paired = 1;
         }
 
+        //print how many matches/misplaced matches
         printf("With guess %d, you got %d perfect matches and %d misplaced matches.\n", guess_number, perfectMatches, misplacedMatches);
         return 1;
     } 
 
+    //if guess was invalid, print incorrect input statement 
     printf("make_guess: invalid guess\n");
     return 0;
 }
