@@ -45,24 +45,19 @@ static int solution4;
  * SIDE EFFECTS: initializes pseudo-random number generation using the function srand. Prints "set_seed: invalid seed\n"
  *               if string is invalid. Prints nothing if it is valid.
  */
-int
-set_seed (const char seed_str[])
-{
-//    Example of how to use sscanf to read a single integer and check for anything other than the integer
-//    "int seed" will contain the number typed by the user (if any) and the string "post" will contain anything after the integer
-//    The user should enter only an integer, and nothing else, so we will check that only "seed" is read. 
-//    We declare
-//    int seed;
-//    char post[2];
-//    The sscanf statement below reads the integer into seed. 
-//    sscanf (seed_str, "%d%1s", &seed, post)
-//    If there is no integer, seed will not be set. If something else is read after the integer, it will go into "post".
-//    The return value of sscanf indicates the number of items read succesfully.
-//    When the user has typed in only an integer, only 1 item should be read sucessfully. 
-//    Check that the return value is 1 to ensure the user enters only an integer. 
-//    Feel free to uncomment these statements, modify them, or delete these comments as necessary. 
-//    You may need to change the return statement below
-   
+int set_seed (const char seed_str[]){   
+
+    int seed;
+    char post[2];
+
+    int poss = sscanf(seed_str, "%d%1s", &seed, post);
+    
+    if(poss == 1){
+        srand(seed);
+        return 1;
+    } 
+    
+    print("set_seed: invalid seed\n");
     return 0;
 }
 
@@ -85,7 +80,15 @@ set_seed (const char seed_str[])
 void
 start_game (int* one, int* two, int* three, int* four)
 {
-    //your code here
+    *one = rand() % 8 + 1;
+    *two = rand() % 8 + 1;
+    *three = rand() % 8 + 1;
+    *four = rand() % 8 + 1;
+
+    solution1 = *one;
+    solution2 = *two;
+    solution3 = *three;
+    solution4 = *four;
     
 }
 
@@ -112,21 +115,82 @@ start_game (int* one, int* two, int* three, int* four)
  *               or an error message (invalid guess)
  *               (NOTE: the output format MUST MATCH EXACTLY, check the wiki writeup)
  */
-int
-make_guess (const char guess_str[], int* one, int* two, 
-	    int* three, int* four)
-{
-//  One thing you will need to read four integers from the string guess_str, using a process
-//  similar to set_seed
-//  The statement, given char post[2]; and four integers w,x,y,z,
-//  sscanf (guess_str, "%d%d%d%d%1s", &w, &x, &y, &z, post)
-//  will read four integers from guess_str into the integers and read anything else present into post
-//  The return value of sscanf indicates the number of items sucessfully read from the string.
-//  You should check that exactly four integers were sucessfully read.
-//  You should then check if the 4 integers are between 1-8. If so, it is a valid guess
-//  Otherwise, it is invalid.  
-//  Feel free to use this sscanf statement, delete these comments, and modify the return statement as needed
-    return 1;
+int make_guess (const char guess_str[], int* one, int* two, int* three, int* four){
+
+    int w, x, y, z;
+    char post2[2];
+    int perfectMatches;
+    int misplacedMatches;
+    int sol1Paired, sol2Paired, sol3Paired, sol4Paired;
+
+
+    int poss2 = sscanf (guess_str, "%d%d%d%d%1s", &w, &x, &y, &z, post2);
+
+    if(poss2 == 4){
+        guess_number += 1;
+
+        if(w == solution1){
+            perfectMatches += 1;
+            sol1Paired = 1;
+        } else if(w == solution2 && sol2Paired == 0){
+            misplacedMatches += 1;
+            sol2Paired = 1;
+        } else if(w == solution3 && sol3Paired == 0){
+            misplacedMatches += 1;
+            sol3Paired = 1;
+        } else if(w == solution4 && sol4Paired == 0){
+            misplacedMatches += 1;
+            sol4Paired = 1;
+        }
+
+        if(x == solution2){
+            perfectMatches += 1;
+            sol2Paired = 1;
+        } else if(x == solution1 && sol1Paired == 0){
+            misplacedMatches += 1;
+            sol1Paired = 1;
+        } else if(x == solution3 && sol3Paired == 0){
+            misplacedMatches += 1;
+            sol3Paired = 1;
+        } else if(x == solution4 && sol4Paired == 0){
+            misplacedMatches += 1;
+            sol4Paired = 1;
+        }
+
+        if(y == solution3){
+            perfectMatches += 1;
+            sol3Paired = 1;
+        } else if(y == solution1 && sol1Paired == 0){
+            misplacedMatches += 1;
+            sol1Paired = 1;
+        } else if(y == solution2 && sol2Paired == 0){
+            misplacedMatches += 1;
+            sol2Paired = 1;
+        } else if(y == solution4 && sol4Paired == 0){
+            misplacedMatches += 1;
+            sol4Paired = 1;
+        }
+
+        if(z == solution4){
+            perfectMatches += 1;
+            sol4Paired = 1;
+        } else if(z == solution1 && sol1Paired == 0){
+            misplacedMatches += 1;
+            sol1Paired = 1;
+        } else if(z == solution2 && sol2Paired == 0){
+            misplacedMatches += 1;
+            sol2Paired = 1;
+        } else if(z == solution3 && sol3Paired == 0){
+            misplacedMatches += 1;
+            sol3Paired = 1;
+        }
+
+        print("With guess %d, you got %d perfect matches and %d misplaced matches.\n", &guess_number, &perfectMatches, &misplacedMatches);
+        return 1;
+    } 
+
+    print("make_guess: invalid guess\n");
+    return 0;
 }
 
 
