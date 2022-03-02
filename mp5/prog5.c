@@ -57,7 +57,7 @@ int set_seed (const char seed_str[]){
         return 1;
     } 
     
-    print("set_seed: invalid seed\n");
+    printf("set_seed: invalid seed\n");
     return 0;
 }
 
@@ -119,9 +119,9 @@ int make_guess (const char guess_str[], int* one, int* two, int* three, int* fou
 
     int w, x, y, z;
     char post2[2];
-    int perfectMatches;
-    int misplacedMatches;
-    int sol1Paired, sol2Paired, sol3Paired, sol4Paired;
+    int perfectMatches = 0;
+    int misplacedMatches = 0;
+    int sol1Paired = 0, sol2Paired = 0, sol3Paired = 0, sol4Paired = 0;
 
 
     int poss2 = sscanf (guess_str, "%d%d%d%d%1s", &w, &x, &y, &z, post2);
@@ -185,11 +185,11 @@ int make_guess (const char guess_str[], int* one, int* two, int* three, int* fou
             sol3Paired = 1;
         }
 
-        print("With guess %d, you got %d perfect matches and %d misplaced matches.\n", &guess_number, &perfectMatches, &misplacedMatches);
+        printf("With guess %d, you got %d perfect matches and %d misplaced matches.\n", guess_number, perfectMatches, misplacedMatches);
         return 1;
     } 
 
-    print("make_guess: invalid guess\n");
+    printf("make_guess: invalid guess\n");
     return 0;
 }
 
