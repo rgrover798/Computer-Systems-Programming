@@ -6,8 +6,17 @@
  *        matrixB, a one dimensional double array of size k*n
  * OUTPUT: matrixC, a one dimensional double array of size m*n
  */
-void matrix_multiply(double *matrixA,double *matrixB,double *matrixC,int m,int k,int n)
-{
-//YOUR CODE HERE
-}
+void matrix_multiply(double *matrixA,double *matrixB,double *matrixC,int m,int k,int n){
 
+    int lengthC = m * n;
+
+    // m is rows of A
+    // n is columns of B
+
+    for(int i = 0; i < lengthC; i++){
+        for(int j = 0; j < k; j++){
+            matrixC[i] += matrixA[i * k + j] * matrixB[i + n];
+        }
+    }
+
+}
