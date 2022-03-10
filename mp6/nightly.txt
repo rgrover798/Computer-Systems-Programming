@@ -1,21 +1,19 @@
 Compilation Results:
 ********************
-updateBoard.c: In function ‘countLiveNeighbor’:
-updateBoard.c:16:1: warning: control reaches end of non-void function [-Wreturn-type]
- }
- ^
 updateBoard.c: In function ‘aliveStable’:
-updateBoard.c:41:1: warning: control reaches end of non-void function [-Wreturn-type]
- }
- ^
-updateBoard.c: In function ‘countLiveNeighbor’:
-updateBoard.c:16:1: warning: control reaches end of non-void function [-Wreturn-type]
- }
- ^
+updateBoard.c:88:5: warning: passing argument 1 of ‘updateBoard’ makes pointer from integer without a cast [enabled by default]
+     updateBoard(* board, boardRowSize, boardColSize);
+     ^
+updateBoard.c:46:6: note: expected ‘int *’ but argument is of type ‘int’
+ void updateBoard(int* board, int boardRowSize, int boardColSize) {
+      ^
 updateBoard.c: In function ‘aliveStable’:
-updateBoard.c:41:1: warning: control reaches end of non-void function [-Wreturn-type]
- }
- ^
+updateBoard.c:88:5: warning: passing argument 1 of ‘updateBoard’ makes pointer from integer without a cast [enabled by default]
+     updateBoard(* board, boardRowSize, boardColSize);
+     ^
+updateBoard.c:46:6: note: expected ‘int *’ but argument is of type ‘int’
+ void updateBoard(int* board, int boardRowSize, int boardColSize) {
+      ^
 
 ******Testing mp6******
 ******Test 0******
@@ -28,4 +26,4 @@ This nightly test is focusing on compilation error not functionality test.
 This nightly report only tests on the released testcases.
 There are many hidden edge testcase for the MP. Please test it yourselve.
 HIGHLY RECOMMEND YOU TO START YOUR MP EARLY!!!!!!!
-Timestamp: 2022-03-09_00:19:38
+Timestamp: 2022-03-10_00:27:20
