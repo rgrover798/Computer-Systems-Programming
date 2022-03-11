@@ -1,29 +1,18 @@
 Compilation Results:
 ********************
-updateBoard.c: In function ‘aliveStable’:
-updateBoard.c:88:5: warning: passing argument 1 of ‘updateBoard’ makes pointer from integer without a cast [enabled by default]
-     updateBoard(* board, boardRowSize, boardColSize);
-     ^
-updateBoard.c:46:6: note: expected ‘int *’ but argument is of type ‘int’
- void updateBoard(int* board, int boardRowSize, int boardColSize) {
-      ^
-updateBoard.c: In function ‘aliveStable’:
-updateBoard.c:88:5: warning: passing argument 1 of ‘updateBoard’ makes pointer from integer without a cast [enabled by default]
-     updateBoard(* board, boardRowSize, boardColSize);
-     ^
-updateBoard.c:46:6: note: expected ‘int *’ but argument is of type ‘int’
- void updateBoard(int* board, int boardRowSize, int boardColSize) {
-      ^
 
 ******Testing mp6******
 ******Test 0******
-countLiveNeighbor test failed
+countLiveNeighbor test passed
+updateBoard test passed
+aliveStable test passed
 ******Test 1******
-countLiveNeighbor test failed
+countLiveNeighbor test passed
+updateBoard test failed
 
 Failed the nightly test.
 This nightly test is focusing on compilation error not functionality test.
 This nightly report only tests on the released testcases.
 There are many hidden edge testcase for the MP. Please test it yourselve.
 HIGHLY RECOMMEND YOU TO START YOUR MP EARLY!!!!!!!
-Timestamp: 2022-03-10_12:14:44
+Timestamp: 2022-03-11_00:21:22
