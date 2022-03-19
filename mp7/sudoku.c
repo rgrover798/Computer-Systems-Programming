@@ -13,7 +13,13 @@ int is_val_in_row(const int val, const int i, const int sudoku[9][9]) {
   assert(i>=0 && i<9);
 
   // BEG TODO
-  
+
+  for(int j = 0; j < 9; j++){
+    if(sudoku[i][j] == val){
+      return 1;
+    }
+  }
+
   return 0;
   // END TODO
 }
@@ -25,6 +31,12 @@ int is_val_in_col(const int val, const int j, const int sudoku[9][9]) {
   assert(j>=0 && j<9);
 
   // BEG TODO
+
+  for(int i = 0; i < 9; i++){
+    if(sudoku[i][j] == val){
+      return 1;
+    }
+  }
   
   return 0;
   // END TODO
@@ -37,7 +49,107 @@ int is_val_in_3x3_zone(const int val, const int i, const int j, const int sudoku
   assert(i>=0 && i<9);
   
   // BEG TODO
-  
+
+  //i is 0-2 range case
+  if(i >= 0 && i <= 2){
+    //j is 0-2 range case
+    if(j >= 0 && j <= 2){
+      for(int k = 0; k <= 2; k++){
+        for(int l = 0; l <= 2; l++){
+          if(sudoku[k][l] == val){
+            return 1;
+          }
+        }
+      }
+    } 
+    //j is 3-5 range case
+    if(j >= 3 && j <= 5){
+      for(int k = 0; k <= 2; k++){
+        for(int l = 3; l <= 5; l++){
+          if(sudoku[k][l] == val){
+            return 1;
+          }
+        }
+      }
+    }
+    //j is 6-8 range case
+    if(j >= 6 && j <= 8){
+      for(int k = 0; k <= 2; k++){
+        for(int l = 6; l <= 8; l++){
+          if(sudoku[k][l] == val){
+            return 1;
+          }
+        }
+      }
+    }
+  }
+  //i is 3-5 range case
+  if(i >= 3 && i <= 5){
+    //j is 0-2 range case
+    if(j >= 0 && j <= 2){
+      for(int k = 3; k <= 5; k++){
+        for(int l = 0; l <= 2; l++){
+          if(sudoku[k][l] == val){
+            return 1;
+          }
+        }
+      }
+    } 
+    //j is 3-5 range case
+    if(j >= 3 && j <= 5){
+      for(int k = 3; k <= 5; k++){
+        for(int l = 3; l <= 5; l++){
+          if(sudoku[k][l] == val){
+            return 1;
+          }
+        }
+      }
+    }
+    //j is 6-8 range case
+    if(j >= 6 && j <= 8){
+      for(int k = 3; k <= 5; k++){
+        for(int l = 6; l <= 8; l++){
+          if(sudoku[k][l] == val){
+            return 1;
+          }
+        }
+      }
+    }
+  }
+  //i is 6-8 range case
+  if(i >= 6 && i <= 8){
+    //j is 0-2 range case
+    if(j >= 0 && j <= 2){
+      for(int k = 6; k <= 8; k++){
+        for(int l = 0; l <= 2; l++){
+          if(sudoku[k][l] == val){
+            return 1;
+          }
+        }
+      }
+    } 
+    //j is 3-5 range case
+    if(j >= 3 && j <= 5){
+      for(int k = 6; k <= 8; k++){
+        for(int l = 3; l <= 5; l++){
+          if(sudoku[k][l] == val){
+            return 1;
+          }
+        }
+      }
+    }
+    //j is 6-8 range case
+    if(j >= 6 && j <= 8){
+      for(int k = 6; k <= 8; k++){
+        for(int l = 6; l <= 8; l++){
+          if(sudoku[k][l] == val){
+            return 1;
+          }
+        }
+      }
+    }
+  }
+
   return 0;
   // END TODO
 }
@@ -49,6 +161,11 @@ int is_val_valid(const int val, const int i, const int j, const int sudoku[9][9]
   assert(i>=0 && i<9 && j>=0 && j<9);
 
   // BEG TODO
+
+  if(is_val_in_row(val, i, sudoku) || is_val_in_col(val, j, sudoku) || is_val_in_3x3_zone(val, i, j, sudoku) == 0){
+    return 0;
+  } 
+
   return 1;
   // END TODO
 }
@@ -58,6 +175,33 @@ int is_val_valid(const int val, const int i, const int j, const int sudoku[9][9]
 int solve_sudoku(int sudoku[9][9]) {
 
   // BEG TODO.
+  int i, j;
+  int val = 10;
+
+  //find final empty value in puzzle and store in val
+  for(int k = 0; k < 9; k++){
+    for(int l = 0; l < 9; l++){
+      if(sudoku[i][j] == 0){
+        i = k;
+        j = l;
+        val = sudoku[i][j];
+      }
+    }
+  }
+  //if val is still 10 (no empty values in puzzle) we are done so return 1
+  if(val == 10){
+    return 1;
+  }
+
+  for(int input = 1; input <= 9; i++){
+    if(is_val_valid(input, i, j, sudoku)){
+      sudoku[i][j] = input;
+      if(solve_sudoku(sudoku)){
+        return 1;
+      }
+      sudoku[i][j] = 0;
+    }
+  }
 
   return 0;
   // END TODO.
