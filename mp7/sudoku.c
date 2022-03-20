@@ -162,7 +162,7 @@ int is_val_valid(const int val, const int i, const int j, const int sudoku[9][9]
 
   // BEG TODO
 
-  if(is_val_in_row(val, i, sudoku) || is_val_in_col(val, j, sudoku) || is_val_in_3x3_zone(val, i, j, sudoku) == 0){
+  if(is_val_in_row(val, i, sudoku) || is_val_in_col(val, j, sudoku) || is_val_in_3x3_zone(val, i, j, sudoku)){
     return 0;
   } 
 
@@ -175,16 +175,16 @@ int is_val_valid(const int val, const int i, const int j, const int sudoku[9][9]
 int solve_sudoku(int sudoku[9][9]) {
 
   // BEG TODO.
-  int i, j;
+  int row, col;
   int val = 10;
 
   //find final empty value in puzzle and store in val
   for(int k = 0; k < 9; k++){
     for(int l = 0; l < 9; l++){
-      if(sudoku[i][j] == 0){
-        i = k;
-        j = l;
-        val = sudoku[i][j];
+      if(sudoku[k][l] == 0){
+        row = k;
+        col = l;
+        val = sudoku[k][l];
       }
     }
   }
@@ -193,13 +193,13 @@ int solve_sudoku(int sudoku[9][9]) {
     return 1;
   }
 
-  for(int input = 1; input <= 9; i++){
-    if(is_val_valid(input, i, j, sudoku)){
-      sudoku[i][j] = input;
+  for(int input = 1; input <= 9; input++){
+    if(is_val_valid(input, row, col, sudoku)){
+      sudoku[row][col] = input;
       if(solve_sudoku(sudoku)){
         return 1;
       }
-      sudoku[i][j] = 0;
+      sudoku[row][col] = 0;
     }
   }
 
