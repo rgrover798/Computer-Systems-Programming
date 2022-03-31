@@ -69,7 +69,7 @@ cell * get_cell(game * cur_game, int row, int col)
 */
 {
     //YOUR CODE STARTS HERE
-    if(row > cur_game -> rows || row < cur_game -> rows || col > cur_game-> cols || col < cur_game-> cols){
+    if(row > cur_game -> rows || row < 0 || col > cur_game-> cols || col < 0){
         return NULL;
     } else {
         return &cur_game->cells[row * cur_game->cols + col];
@@ -92,38 +92,42 @@ int move_w(game * cur_game)
     int sampleSpace[numRows][numCols];
     for(int i = 0; i < numRows; i++){
         for(int j = 0; j < numCols; j++){
-            sampleSpace[i][j] == -1;
+            sampleSpace[i][j] = -1;
         }
     }
     int retVal = 0;
-
+    //lab 8 algorithim
     for(int curRow = 0; curRow < numRows; curRow++){
         for(int curCol = 0; curCol < numCols; curCol++){
             if(!(cur_game -> cells[curRow * numCols + curCol] == -1)){
-                for(int swapRow = 0; swapRow < curRow; swapRow++){
+                //loop till curRow so you find minimum row 
+                for(int swapRow = 0; swapRow <= curRow; swapRow++){
+                    //check if swap is complete
                     int complete = 0;
+                    //find empty cell at current value in current column
                     if(cur_game->cells[swapRow*numCols + curCol] == -1){
                         //swap values at row indexes
-                        cur_game -> cells[swapRow * numCols + curCol] == cur_game -> cells[curRow * numCols + curCol];
-                        cur_game -> cells[curRow * numCols + curCol] == -1;
+                        cur_game -> cells[swapRow * numCols + curCol] = cur_game -> cells[curRow * numCols + curCol];
+                        cur_game -> cells[curRow * numCols + curCol] = -1;
                         //set returnVal to 1 since move is valid and complete to 1 since move is complete
-                        retVal = 1;
                         complete = 1;
+                        retVal = 1;
                     } 
+                    //accounting for combining values
                     if(curRow == swapRow || complete == 1){
                         //calculate values at current row and row above
-                        int swapRowVal = cur_game -> cells[curRow * numCols + curCol];
-                        int swapRowPrevVal = cur_game -> cells[(curRow - 1) * numCols + curCol];
-                        if(sampleSpace[curRow-1][curCol] == -1 && curRow != 0 && swapRowVal == swapRowPrevVal){
-                            retVal = 1;
+                        int swapRowVal = cur_game -> cells[swapRow * numCols + curCol];
+                        int swapRowPrevVal = cur_game -> cells[(swapRow - 1) * numCols + curCol];
+                        if(sampleSpace[swapRow-1][curCol] == -1 && swapRow != 0 && swapRowVal == swapRowPrevVal){
                             //combine values
-                            cur_game -> cells[(curRow - 1) * numCols + curCol] = swapRowVal + swapRowPrevVal;
+                            cur_game -> cells[(swapRow - 1) * numCols + curCol] = swapRowVal + swapRowPrevVal;
+                            cur_game -> cells[swapRow * numCols + curCol] = -1;
                             cur_game -> score = curScore + (swapRowVal + swapRowPrevVal);
-                            cur_game -> cells[curRow * numCols + curCol] == -1;
-                            sampleSpace[curRow - 1][curCol] = 0;
+                            sampleSpace[swapRow - 1][curCol] = 0;
+                            retVal = 1;
                         }
+                        break;
                     }
-                    break;
                 }
             }
         }
@@ -141,7 +145,7 @@ int move_s(game * cur_game) //slide down
     int sampleSpace[numRows][numCols];
     for(int i = 0; i < numRows; i++){
         for(int j = 0; j < numCols; j++){
-            sampleSpace[i][j] == -1;
+            sampleSpace[i][j] = -1;
         }
     }
     int retVal = 0;
@@ -153,26 +157,26 @@ int move_s(game * cur_game) //slide down
                     int complete = 0;
                     if(cur_game->cells[swapRow*numCols + curCol] == -1){
                         //swap values at row indexes
-                        cur_game -> cells[swapRow * numCols + curCol] == cur_game -> cells[curRow * numCols + curCol];
-                        cur_game -> cells[curRow * numCols + curCol] == -1;
+                        cur_game -> cells[swapRow * numCols + curCol] = cur_game -> cells[curRow * numCols + curCol];
+                        cur_game -> cells[curRow * numCols + curCol] = -1;
                         //set returnVal to 1 since move is valid and complete to 1 since move is complete
                         retVal = 1;
                         complete = 1;
                     } 
                     if(curRow == swapRow || complete == 1){
                         //calculate values at current row and row above
-                        int swapRowVal = cur_game -> cells[curRow * numCols + curCol];
-                        int swapRowPrevVal = cur_game -> cells[(curRow - 1) * numCols + curCol];
-                        if(sampleSpace[curRow-1][curCol] == -1 && curRow != 0 && swapRowVal == swapRowPrevVal){
+                        int swapRowVal = cur_game -> cells[swapRow * numCols + curCol];
+                        int swapRowPrevVal = cur_game -> cells[(swapRow + 1) * numCols + curCol];
+                        if(sampleSpace[swapRow + 1][curCol] == -1 && swapRow != 0 && swapRowVal == swapRowPrevVal){
                             retVal = 1;
                             //combine values
-                            cur_game -> cells[(curRow - 1) * numCols + curCol] = swapRowVal + swapRowPrevVal;
+                            cur_game -> cells[(swapRow + 1) * numCols + curCol] = swapRowVal + swapRowPrevVal;
+                            cur_game -> cells[swapRow * numCols + curCol] = -1;
                             cur_game -> score = curScore + (swapRowVal + swapRowPrevVal);
-                            cur_game -> cells[curRow * numCols + curCol] == -1;
-                            sampleSpace[curRow - 1][curCol] = 0;
+                            sampleSpace[swapRow + 1][curCol] = 0;
                         }
+                        break;
                     }
-                    break;
                 }
             }
         }
@@ -192,7 +196,7 @@ int move_a(game * cur_game) //slide left
     int sampleSpace[numRows][numCols];
     for(int i = 0; i < numRows; i++){
         for(int j = 0; j < numCols; j++){
-            sampleSpace[i][j] == -1;
+            sampleSpace[i][j] = -1;
         }
     }
     int retVal = 0;
@@ -202,28 +206,28 @@ int move_a(game * cur_game) //slide left
             if(!(cur_game -> cells[curRow * numCols + curCol] == -1)){
                 for(int swapCol = 0; swapCol <= curCol; swapCol++){
                     int complete = 0;
-                    if(cur_game->cells[swapCol*numCols + curCol] == -1){
+                    if(cur_game->cells[curRow*numCols + swapCol] == -1){
                         //swap values at row indexes
-                        cur_game -> cells[swapCol * numCols + curCol] == cur_game -> cells[curRow * numCols + curCol];
-                        cur_game -> cells[curRow * numCols + curCol] == -1;
+                        cur_game -> cells[curRow * numCols + swapCol] = cur_game -> cells[curRow * numCols + curCol];
+                        cur_game -> cells[curRow * numCols + curCol] = -1;
                         //set returnVal to 1 since move is valid and complete to 1 since move is complete
                         retVal = 1;
                         complete = 1;
                     } 
-                    if(curRow == swapCol || complete == 1){
+                    if(curCol == swapCol || complete == 1){
                         //calculate values at current row and row above
-                        int swapRowVal = cur_game -> cells[curRow * numCols + curCol];
-                        int swapRowPrevVal = cur_game -> cells[(curRow - 1) * numCols + curCol];
-                        if(sampleSpace[curRow-1][curCol] == -1 && curRow != 0 && swapRowVal == swapRowPrevVal){
+                        int swapRowVal = cur_game -> cells[curRow * numCols + swapCol];
+                        int swapRowPrevVal = cur_game -> cells[curRow * numCols + swapCol - 1];
+                        if(sampleSpace[curRow][swapCol - 1] == -1 && swapCol != 0 && swapRowVal == swapRowPrevVal){
                             retVal = 1;
                             //combine values
-                            cur_game -> cells[(curRow - 1) * numCols + curCol] = swapRowVal + swapRowPrevVal;
+                            cur_game -> cells[curRow * numCols + swapCol - 1] = swapRowVal + swapRowPrevVal;
+                            cur_game -> cells[curRow * numCols + swapCol] = -1;
                             cur_game -> score = curScore + (swapRowVal + swapRowPrevVal);
-                            cur_game -> cells[curRow * numCols + curCol] == -1;
-                            sampleSpace[curRow - 1][curCol] = 0;
+                            sampleSpace[swapCol - 1][curCol] = 0;
                         }
+                        break;
                     }
-                    break;
                 }
             }
         }
@@ -242,7 +246,7 @@ int move_d(game * cur_game){ //slide to the right
     int sampleSpace[numRows][numCols];
     for(int i = 0; i < numRows; i++){
         for(int j = 0; j < numCols; j++){
-            sampleSpace[i][j] == -1;
+            sampleSpace[i][j] = -1;
         }
     }
     int retVal = 0;
@@ -250,30 +254,30 @@ int move_d(game * cur_game){ //slide to the right
     for(int curRow = 0; curRow <= numRows; curRow++){
         for(int curCol = numCols - 1; curCol >= 0; curCol--){
             if(!(cur_game -> cells[curRow * numCols + curCol] == -1)){
-                for(int swapCol = 0; swapCol >= curCol; swapCol--){
+                for(int swapCol = numCols - 1; swapCol >= curCol; swapCol--){
                     int complete = 0;
-                    if(cur_game->cells[swapCol*numCols + curCol] == -1){
+                    if(cur_game->cells[curRow * numCols + swapCol] == -1){
                         //swap values at row indexes
-                        cur_game -> cells[swapCol * numCols + curCol] == cur_game -> cells[curRow * numCols + curCol];
-                        cur_game -> cells[curRow * numCols + curCol] == -1;
+                        cur_game -> cells[curRow * numCols + swapCol] = cur_game -> cells[curRow * numCols + curCol];
+                        cur_game -> cells[curRow * numCols + curCol] = -1;
                         //set returnVal to 1 since move is valid and complete to 1 since move is complete
                         retVal = 1;
                         complete = 1;
                     } 
-                    if(curRow == swapCol || complete == 1){
+                    if(curCol == swapCol || complete == 1){
                         //calculate values at current row and row above
-                        int swapRowVal = cur_game -> cells[curRow * numCols + curCol];
-                        int swapRowPrevVal = cur_game -> cells[(curRow - 1) * numCols + curCol];
-                        if(sampleSpace[curRow-1][curCol] == -1 && curRow != 0 && swapRowVal == swapRowPrevVal){
+                        int swapRowVal = cur_game -> cells[curRow * numCols + swapCol];
+                        int swapRowPrevVal = cur_game -> cells[curRow * numCols + swapCol + 1];
+                        if(sampleSpace[curRow][swapCol + 1] == -1 && curRow != 0 && swapRowVal == swapRowPrevVal){
                             retVal = 1;
                             //combine values
-                            cur_game -> cells[(curRow - 1) * numCols + curCol] = swapRowVal + swapRowPrevVal;
+                            cur_game -> cells[curRow * numCols + swapCol + 1] = swapRowVal + swapRowPrevVal;
+                            cur_game -> cells[curRow * numCols + swapCol] = -1;
                             cur_game -> score = curScore + (swapRowVal + swapRowPrevVal);
-                            cur_game -> cells[curRow * numCols + curCol] == -1;
-                            sampleSpace[curRow - 1][curCol] = 0;
+                            sampleSpace[curRow][swapCol + 1] = 0;
                         }
+                        break;
                     }
-                    break;
                 }
             }
         }
@@ -292,42 +296,31 @@ int legal_move_check(game * cur_game)
     int numRows = cur_game -> rows;
     int numCols = cur_game -> cols;
     int retVal = 0; 
-    int adjCell;
-    int val;
+    int adjCell = 0;
+    int val = 0;
 
+    //loop through game board
     for(int i = 0; i < numRows; i++){
         for(int j = 0; j < numCols; j++){
-            val = get_cell(cur_game, i, j);
+            //get value at cell
+            val = cur_game -> cells[i * numCols + j];
+            //if cell empty, return 1
             if(val == -1){
                 retVal = 1;
             } 
-            if((j + 1) < numCols){
-                adjCell = get_cell(cur_game, i, j + 1);
-                if(adjCell == val){
-                    retVal = 1;
-                    continue;
-                }
-            } 
-            if((j - 1) >= 0){
-                adjCell = get_cell(cur_game, i, j - 1);
-                if(adjCell == val){
-                    retVal = 1;
-                    continue;
-                }
+            //get value at cell on right
+            adjCell = cur_game -> cells[i * numCols + j + 1];
+            //if value on right equals value at selected cell, return 1
+            if(adjCell == val && (j + 1) < numCols){
+                retVal = 1;
+                continue;
             }
-            if((i + 1) < numRows){
-                adjCell = get_cell(cur_game, i + 1, j);
-                if(adjCell == val){
-                    retVal = 1;
-                    continue;
-                }
-            }
-            if((i - 1) >= 0){
-                adjCell = get_cell(cur_game, i - 1, j);
-                if(adjCell == val){
-                    retVal = 1;
-                    continue;
-                }
+            //get value at cell on top
+            adjCell = cur_game -> cells[(i + 1) * numCols + j];
+            //if value on top equals value at selected cell, return 1
+            if(adjCell == val && (i + 1) < numRows){
+                retVal = 1;
+                continue;
             }
         }
     }
