@@ -1,3 +1,20 @@
+/*
+ * I found this MP extremely intuitive as a lot of the code had to be written from scratch, as well as it allowed
+ * me to improve my knowledge of pointers and structs. For the first function make_game, I used the -> to assign
+ * the variables to their attritbutes defined in the struct, as well as looped through the game object to set
+ * each cell of the grids to -1 or empty. For remake_game, I modified the attributes the same way with the new
+ * row and column attributes passed into the function. Looped like previous function as well to set all values to
+ * -1. For get_cell, I checked the bounds 0 to number of columns/rows which I got from the game object attributes 
+ * in order to check if the selected cell was in the bounds of the gameboard. For the move w,a,s,d, I used the 
+ * algorithm from lab 8 which was slightly modified to account for differences in direction, as well as combining
+ * adjacent tiles if their values were the same. Finally for the last function legal_move, I loop through each cell
+ * first checking if it is empty, then checking the neighbor above and next to it to see if there are any adjacent
+ * values that are equal. If these values are equal then the game is not done but if there are no adjacaent
+ * equal values or empty cells, game is over. Overall, I found the MP very enjoyable since it tested a lot of
+ * concepts that we have learned over the last few weeks which was good preperation for the next midterm. 
+ *
+ */
+
 #include "game.h"
 
 
@@ -14,9 +31,11 @@ game * make_game(int rows, int cols)
     mygame->cells = malloc(rows*cols*sizeof(cell));
 
     //YOUR CODE STARTS HERE:  Initialize all other variables in game struct
+    //set variables and set score to 0
     mygame->rows = rows;
     mygame->cols = cols;
     mygame->score = 0;
+    //loop through game board to fill cell values with -1
     for(int i = 0; i < rows; i++){
         for(int j = 0; j < cols; j++){
             mygame->cells[i * cols + j] = -1;
@@ -38,10 +57,12 @@ void remake_game(game ** _cur_game_ptr,int new_rows,int new_cols)
 	(*_cur_game_ptr)->cells = malloc(new_rows*new_cols*sizeof(cell));
 
 	 //YOUR CODE STARTS HERE:  Re-initialize all other variables in game struct
+     //update board with new_rows and new_cols
      (*_cur_game_ptr)->rows = new_rows;
      (*_cur_game_ptr)->cols = new_cols;
      (*_cur_game_ptr)->score = 0;
 
+    //loop through game board and set all values to -1.
      for(int i = 0; i < new_rows; i++){
         for(int j = 0; j < new_cols; j++){
             (*_cur_game_ptr)->cells[i * new_cols + j] = -1;
@@ -69,9 +90,11 @@ cell * get_cell(game * cur_game, int row, int col)
 */
 {
     //YOUR CODE STARTS HERE
+    //check bounds if row is between the number or rows and 0 and same with column
     if(row > cur_game -> rows || row < 0 || col > cur_game-> cols || col < 0){
         return NULL;
     } else {
+        //return pointer
         return &cur_game->cells[row * cur_game->cols + col];
     }
     return NULL;
@@ -89,27 +112,32 @@ int move_w(game * cur_game)
     int numRows = cur_game -> rows;
     int numCols = cur_game -> cols;
     int curScore = cur_game -> score;
+    //create copy of board filled with all -1 to keep track of changes made to board
     int sampleSpace[numRows][numCols];
     for(int i = 0; i < numRows; i++){
         for(int j = 0; j < numCols; j++){
             sampleSpace[i][j] = -1;
         }
     }
+    //declare and initialize return value which is 0 by default
     int retVal = 0;
     //lab 8 algorithim
+    //loop through rows from start
     for(int curRow = 0; curRow < numRows; curRow++){
+        //loop through columns from start
         for(int curCol = 0; curCol < numCols; curCol++){
+            //find first non empty cell
             if(!(cur_game -> cells[curRow * numCols + curCol] == -1)){
                 //loop till curRow so you find minimum row 
                 for(int swapRow = 0; swapRow <= curRow; swapRow++){
-                    //check if swap is complete
+                    //declare variable complete to check if the swap is done and ready to merge
                     int complete = 0;
                     //find empty cell at current value in current column
                     if(cur_game->cells[swapRow*numCols + curCol] == -1){
                         //swap values at row indexes
                         cur_game -> cells[swapRow * numCols + curCol] = cur_game -> cells[curRow * numCols + curCol];
                         cur_game -> cells[curRow * numCols + curCol] = -1;
-                        //set returnVal to 1 since move is valid and complete to 1 since move is complete
+                        //set returnVal to 1 since move is valid and complete to 1 since move is complete and ready to merge
                         complete = 1;
                         retVal = 1;
                     } 
@@ -118,14 +146,16 @@ int move_w(game * cur_game)
                         //calculate values at current row and row above
                         int swapRowVal = cur_game -> cells[swapRow * numCols + curCol];
                         int swapRowPrevVal = cur_game -> cells[(swapRow - 1) * numCols + curCol];
+                        //check if both values are equal, and if it isnt the first row, and if it hasn't already been merged which is tracked by the copy of board
                         if(sampleSpace[swapRow-1][curCol] == -1 && swapRow != 0 && swapRowVal == swapRowPrevVal){
-                            //combine values
+                            //combine values, update score, store change in copy of board so it is not repeated
                             cur_game -> cells[(swapRow - 1) * numCols + curCol] = swapRowVal + swapRowPrevVal;
                             cur_game -> cells[swapRow * numCols + curCol] = -1;
                             cur_game -> score = curScore + (swapRowVal + swapRowPrevVal);
                             sampleSpace[swapRow - 1][curCol] = 0;
                             retVal = 1;
                         }
+                        //it is complete, so break loop and jump to next value
                         break;
                     }
                 }
@@ -136,6 +166,7 @@ int move_w(game * cur_game)
     return retVal;
 };
 
+//see comments for move_w which are similiar to move_s as to how it works
 int move_s(game * cur_game) //slide down
 {
     //YOUR CODE STARTS HERE
@@ -149,10 +180,14 @@ int move_s(game * cur_game) //slide down
         }
     }
     int retVal = 0;
-
+    
+    //alter algorithm slightly to account for different direction
+    //loop from last row to first since going down
     for(int curRow = numRows - 1; curRow >= 0; curRow--){
+        //loop from first column to last
         for(int curCol = 0; curCol < numCols; curCol++){
             if(!(cur_game -> cells[curRow * numCols + curCol] == -1)){
+                //loop from last row till whatever curRow is to find closest row
                 for(int swapRow = numRows - 1; swapRow >= curRow; swapRow--){
                     int complete = 0;
                     if(cur_game->cells[swapRow*numCols + curCol] == -1){
@@ -169,7 +204,7 @@ int move_s(game * cur_game) //slide down
                         int swapRowPrevVal = cur_game -> cells[(swapRow + 1) * numCols + curCol];
                         if(sampleSpace[swapRow + 1][curCol] == -1 && swapRow != 0 && swapRowVal == swapRowPrevVal){
                             retVal = 1;
-                            //combine values
+                            //combine values, update score, store change in copy of board so it is not repeated
                             cur_game -> cells[(swapRow + 1) * numCols + curCol] = swapRowVal + swapRowPrevVal;
                             cur_game -> cells[swapRow * numCols + curCol] = -1;
                             cur_game -> score = curScore + (swapRowVal + swapRowPrevVal);
@@ -187,6 +222,7 @@ int move_s(game * cur_game) //slide down
     return retVal;
 };
 
+//see comments for move_w which are slightly similiar to move_a as to how it works
 int move_a(game * cur_game) //slide left
 {
     //YOUR CODE STARTS HERE
@@ -201,13 +237,17 @@ int move_a(game * cur_game) //slide left
     }
     int retVal = 0;
 
+    //alter algorithm slightly to account for different direction
+    //loop from first to last row
     for(int curRow = 0; curRow < numRows; curRow++){
+        //loop from first to last column
         for(int curCol = 0; curCol < numCols; curCol++){
             if(!(cur_game -> cells[curRow * numCols + curCol] == -1)){
+                //loop from first col to curCol to find next available column
                 for(int swapCol = 0; swapCol <= curCol; swapCol++){
                     int complete = 0;
                     if(cur_game->cells[curRow*numCols + swapCol] == -1){
-                        //swap values at row indexes
+                        //swap values at column indexes
                         cur_game -> cells[curRow * numCols + swapCol] = cur_game -> cells[curRow * numCols + curCol];
                         cur_game -> cells[curRow * numCols + curCol] = -1;
                         //set returnVal to 1 since move is valid and complete to 1 since move is complete
@@ -215,12 +255,12 @@ int move_a(game * cur_game) //slide left
                         complete = 1;
                     } 
                     if(curCol == swapCol || complete == 1){
-                        //calculate values at current row and row above
+                        //calculate values at current column and column adjacent
                         int swapRowVal = cur_game -> cells[curRow * numCols + swapCol];
                         int swapRowPrevVal = cur_game -> cells[curRow * numCols + swapCol - 1];
                         if(sampleSpace[curRow][swapCol - 1] == -1 && swapCol != 0 && swapRowVal == swapRowPrevVal){
                             retVal = 1;
-                            //combine values
+                            //combine values, update score, store change in copy of board so it is not repeated
                             cur_game -> cells[curRow * numCols + swapCol - 1] = swapRowVal + swapRowPrevVal;
                             cur_game -> cells[curRow * numCols + swapCol] = -1;
                             cur_game -> score = curScore + (swapRowVal + swapRowPrevVal);
@@ -238,6 +278,7 @@ int move_a(game * cur_game) //slide left
     return retVal;
 };
 
+//see comments for move_w which are slightly similiar to move_d as to how it works
 int move_d(game * cur_game){ //slide to the right
     //YOUR CODE STARTS HERE
     int numRows = cur_game -> rows;
@@ -251,13 +292,17 @@ int move_d(game * cur_game){ //slide to the right
     }
     int retVal = 0;
 
+    //alter algorithm slightly to account for different direction
+    //loop from first to last row
     for(int curRow = 0; curRow <= numRows; curRow++){
+        //loop from last to first column
         for(int curCol = numCols - 1; curCol >= 0; curCol--){
             if(!(cur_game -> cells[curRow * numCols + curCol] == -1)){
+                //loop from last column to closest curCol to find closest -1 value
                 for(int swapCol = numCols - 1; swapCol >= curCol; swapCol--){
                     int complete = 0;
                     if(cur_game->cells[curRow * numCols + swapCol] == -1){
-                        //swap values at row indexes
+                        //swap values at column indexes
                         cur_game -> cells[curRow * numCols + swapCol] = cur_game -> cells[curRow * numCols + curCol];
                         cur_game -> cells[curRow * numCols + curCol] = -1;
                         //set returnVal to 1 since move is valid and complete to 1 since move is complete
@@ -265,12 +310,12 @@ int move_d(game * cur_game){ //slide to the right
                         complete = 1;
                     } 
                     if(curCol == swapCol || complete == 1){
-                        //calculate values at current row and row above
+                        //calculate values at current column and column adjacent
                         int swapRowVal = cur_game -> cells[curRow * numCols + swapCol];
                         int swapRowPrevVal = cur_game -> cells[curRow * numCols + swapCol + 1];
                         if(sampleSpace[curRow][swapCol + 1] == -1 && curRow != 0 && swapRowVal == swapRowPrevVal){
                             retVal = 1;
-                            //combine values
+                            //combine values, update score, store change in copy of board so it is not repeated
                             cur_game -> cells[curRow * numCols + swapCol + 1] = swapRowVal + swapRowPrevVal;
                             cur_game -> cells[curRow * numCols + swapCol] = -1;
                             cur_game -> score = curScore + (swapRowVal + swapRowPrevVal);
