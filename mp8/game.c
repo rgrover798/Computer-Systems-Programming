@@ -202,7 +202,8 @@ int move_s(game * cur_game) //slide down
                         //calculate values at current row and row above
                         int swapRowVal = cur_game -> cells[swapRow * numCols + curCol];
                         int swapRowPrevVal = cur_game -> cells[(swapRow + 1) * numCols + curCol];
-                        if(sampleSpace[swapRow + 1][curCol] == -1 && swapRow != 0 && swapRowVal == swapRowPrevVal){
+                        //check if both values are equal, and if it isnt the last row, and if it hasn't already been merged which is tracked by the copy of board
+                        if(sampleSpace[swapRow + 1][curCol] == -1 && swapRow != (numRows - 1) && swapRowVal == swapRowPrevVal){
                             retVal = 1;
                             //combine values, update score, store change in copy of board so it is not repeated
                             cur_game -> cells[(swapRow + 1) * numCols + curCol] = swapRowVal + swapRowPrevVal;
@@ -258,6 +259,7 @@ int move_a(game * cur_game) //slide left
                         //calculate values at current column and column adjacent
                         int swapRowVal = cur_game -> cells[curRow * numCols + swapCol];
                         int swapRowPrevVal = cur_game -> cells[curRow * numCols + swapCol - 1];
+                        //check if both values are equal, and if it isnt the first column, and if it hasn't already been merged which is tracked by the copy of board
                         if(sampleSpace[curRow][swapCol - 1] == -1 && swapCol != 0 && swapRowVal == swapRowPrevVal){
                             retVal = 1;
                             //combine values, update score, store change in copy of board so it is not repeated
@@ -313,7 +315,8 @@ int move_d(game * cur_game){ //slide to the right
                         //calculate values at current column and column adjacent
                         int swapRowVal = cur_game -> cells[curRow * numCols + swapCol];
                         int swapRowPrevVal = cur_game -> cells[curRow * numCols + swapCol + 1];
-                        if(sampleSpace[curRow][swapCol + 1] == -1 && curRow != 0 && swapRowVal == swapRowPrevVal){
+                        //check if both values are equal, and if it isnt the last column, and if it hasn't already been merged which is tracked by the copy of board
+                        if(sampleSpace[curRow][swapCol + 1] == -1 && swapCol != numCols - 1 && swapRowVal == swapRowPrevVal){
                             retVal = 1;
                             //combine values, update score, store change in copy of board so it is not repeated
                             cur_game -> cells[curRow * numCols + swapCol + 1] = swapRowVal + swapRowPrevVal;
