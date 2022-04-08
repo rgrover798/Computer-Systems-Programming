@@ -18,10 +18,10 @@ maze_t * createMaze(char * fileName)
      * MEMORY ALLOCATION PART 
      * ----------------------
      */
-    int rows, cols;
+    int rows, cols, i, j;
     //begin file IO 
-    FILE * myfile = fopen("fileName", "r");
-    scanf(myfile, "%d, %d", &cols, &rows);
+    FILE * myfile = fopen(fileName, "r");
+    fscanf(myfile, "%d %d", &cols, &rows);
     //create maze object and initialize height and width attributes
     maze_t * myMaze = malloc(sizeof(maze_t));
     myMaze -> height = rows;
@@ -29,7 +29,7 @@ maze_t * createMaze(char * fileName)
     //allocate memory for each group of cells in a row as a pointer
     myMaze -> cells = (char **) malloc(rows * sizeof(char *));
     //loop through array of pointers and allocate memory for selected number of character cells for each pointer
-    for(int i = 0; i < rows; i++){
+    for(i = 0; i < rows; i++){
         myMaze -> cells[i] =  (char *) malloc(cols * sizeof(char));
     }
 
@@ -39,10 +39,11 @@ maze_t * createMaze(char * fileName)
      * -----------------
      */
     //loop through entire maze
-    for(int i = 0; i < rows; i++){
-        for(int j = 0; j < cols; j++){
+    char charIn;
+    for(i = 0; i < rows; i++){
+        for(j = 0; j < cols; j++){
             //get a character
-            char charIn = fgetc(myfile);
+            charIn = fgetc(myfile);
             //if start or end mark it and check if its in bounds
             if(charIn == 'S' && j >= 0){
                 myMaze -> startRow = i;
@@ -58,7 +59,7 @@ maze_t * createMaze(char * fileName)
              * invalid character to be filled for that cell.
              */
             if(charIn != '\n'){
-                myMaze -> cells[i][j] == charIn;
+                myMaze -> cells[i][j] = charIn;
             } else {
                 j--;
             }
@@ -80,8 +81,9 @@ maze_t * createMaze(char * fileName)
 void destroyMaze(maze_t * maze)
 {
     // Your code here.
+    int i;
     //loop through rows of maze freeing pointers of rows
-    for(int i = 0; i < maze -> height; i++){
+    for(i = 0; i < maze -> height; i++){
         free(maze -> cells[i]);
     }
     //free cells and set to null
@@ -104,18 +106,20 @@ void destroyMaze(maze_t * maze)
 void printMaze(maze_t * maze)
 {
     // Your code here.
+    int i, j;
     int rows = maze -> height;
     int cols = maze -> width;
 
     //print columns and rows and then loop through maze printing each character
     //print a newline after each ROW 
-    printf("%d %d", cols, rows);
-    for(int i = 0; i < rows; i++){
-        printf("\n");
-        for(int j = 0; j < cols; j++){
+    // printf("%d %d", cols, rows);
+    // printf("\n");
+    for(i = 0; i < rows; i++){
+        for(j = 0; j < cols; j++){
             char outputChar = maze -> cells[i][j];
             printf("%c", outputChar);
         }
+        printf("\n");
     }
 }
 
@@ -135,6 +139,8 @@ int solveMazeDFS(maze_t * maze, int col, int row)
     int colBounds = maze -> width; 
     int endRow = maze -> endRow;
     int endCol = maze -> endColumn;
+    int startRow = maze -> startRow;
+    int startCol = maze -> startColumn; 
 
     //check if in bounds
     if(row < 0 || row >= rowBounds || col < 0 || col >= colBounds){
@@ -151,6 +157,7 @@ int solveMazeDFS(maze_t * maze, int col, int row)
 
     //check if reached end
     if(row == endRow && col == endCol){
+        maze -> cells[startRow][startCol] = 'S';
         return 1;
     }
 
@@ -172,6 +179,8 @@ int solveMazeDFS(maze_t * maze, int col, int row)
     }
 
     //backtrack by setting this to a visited path and returning false
-    maze -> cells[row][col] = '~';
+    if(charCheck != 'S' && charCheck!= 'E'){
+        maze -> cells[row][col] = '~';
+    }
     return 0;
 }
