@@ -1,3 +1,23 @@
+/*
+ * I found this MP to be quite challenging in terms of reading from the input file as I had to spend
+ * a lot of time going through the lecture sides to write the correct syntax. In the functions, I implemented
+ * the first function by splitting it up into two parts. In the first part, I wrote the code that properly
+ * creates the maze object and then allocates memory appropriately for it. I was also a bit shaky
+ * on how malloc works so I referred to the slides very heavily for this part of the MP as well. The second
+ * part of my implementation focused on filling the maze with the appropriate values listed in the input
+ * file by looping through the maze and matching the corresponding parts of the maze in the input file
+ * to my maze object. For the second function, I freed the memory which was taken up by the maze object
+ * and the cells within it with help from the slides as well as I wasn't sure how to free the memory for
+ * the cell objects initially. I also learned that you need to set the objects to NULL once you free their 
+ * memory. For the third function, I simply looped through my maze object and printed the corresponding
+ * ASCII values. For the final function, I followed the algorithm given as well as saw an issue when I would
+ * compile and run my code where S would change to a star. To fix this, I custom changed the start back to S
+ * after I recursively found the solution in order to fix this at the end and give the proper solution. Overall
+ * the MP was able to bring together a lot of new topics we learned in class so I thought that it was very
+ * helpful in that aspect.
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "maze.h"
@@ -155,32 +175,35 @@ int solveMazeDFS(maze_t * maze, int col, int row)
         return 0;
     }
 
-    //check if reached end
+    //check if reached end and set beginning to S because code below sets S to a *
     if(row == endRow && col == endCol){
         maze -> cells[startRow][startCol] = 'S';
         return 1;
     }
 
     //set as part of solution
-    maze -> cells[row][col] = '*';
+    if(maze -> cells[row][col] != 'E'){
+        maze -> cells[row][col] = '*';
+    }
 
     //move in any direction and recursively call function
-    if(solveMazeDFS(maze, col - 1, row)){
+    if(solveMazeDFS(maze, col, row + 1)){
         return 1;
     }
     if(solveMazeDFS(maze, col + 1, row)){
         return 1;
     }
-    if(solveMazeDFS(maze, col, row + 1)){
+    if(solveMazeDFS(maze, col, row - 1)){
         return 1;
     }
-    if(solveMazeDFS(maze, col, row - 1)){
+    if(solveMazeDFS(maze, col - 1, row)){
         return 1;
     }
 
     //backtrack by setting this to a visited path and returning false
-    if(charCheck != 'S' && charCheck!= 'E'){
+    if(maze -> cells[row][col] != 'S' && maze -> cells[row][col] != 'E'){
         maze -> cells[row][col] = '~';
     }
+
     return 0;
 }
