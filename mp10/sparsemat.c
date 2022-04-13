@@ -6,7 +6,7 @@
 
 
 
-
+//DONE
 sp_tuples * load_tuples(char* input_file)
 {
     /*
@@ -32,9 +32,8 @@ sp_tuples * load_tuples(char* input_file)
     sp_tuples_node * headNode = NULL;
     sp_tuples_node * nextNode = NULL;
 
-    do {
-        //scan contents of 1 line into variables below
-        fscanf(myfile, "%d %d %lf", &rowIndex, &colIndex, &val);
+    //loop through file to EOF is reached
+    while(fscanf(myfile, "%d %d %lf", &rowIndex, &colIndex, &val) != EOF){
         //if val = 0 skip to next line
         if(val != 0){
             //allocate memory for the nextnode and set values of nextNode
@@ -48,7 +47,7 @@ sp_tuples * load_tuples(char* input_file)
             //set headNode equal to the nextNode to save pointer to the nextNode
             headNode = nextNode;
         }  
-    } while(fscanf(myfile, "%d %d %lf", &rowIndex, &colIndex, &val) != EOF);
+    } 
 
     //close file and set tuple head to headNode
     fclose(myfile);
@@ -59,47 +58,43 @@ sp_tuples * load_tuples(char* input_file)
      * ORDER NODES
      * -----------
      */
-    //currentNode keeps track of the current node that is being looked at in that moment of time
+
+    int tempRow, tempCol, testNodeIndex, swapNodeIndex, i, j;
+    double tempVal;
     sp_tuples_node * currentNode = myTuple -> tuples_head;
-    //swapNode keeps track of the node to be swapped in that moment of time
-    sp_tuples_node * swapNode = NULL;
-    //testNode keeps track of the overall node from the head, to tail that is being checked for being in order
-    sp_tuples_node * testedNode = myTuple -> tuples_head;
+    sp_tuples_node * testNode, * swapNode;
 
-    //set up loop to overall loop through the whole tuple
-    for(int i = 0; i < myTuple -> nz; i++){
-        //if it isnt the first iteration, then increment the testedNode to the nextNode and set currentNode to that
-        if(i != 0){
-            testedNode = testedNode -> next;
-            currentNode = testedNode;
-        }
-        //set swapNode which will go through the whole linked list to the beginning of the linked list
-        swapNode = myTuple -> tuples_head;
-        //loop through the linked list till NULL
-        while(currentNode != NULL){
-            //get the index of the current node (whatever node is being checked for, if 0th iteration then head node)
-            int curNodeIndex = currentNode -> row * myTuple -> m + currentNode -> col;
-            //get the index of the swap node, which is the head node on the 0th iteration
-            int swapNodeIndex = swapNode -> row * myTuple -> m + swapNode -> col;
-            //if the current node index > the index of the current node being checked, swap the values of those two nodes
-            if(curNodeIndex > swapNodeIndex){
-                int tempRow = currentNode -> row;
-                int tempCol = currentNode -> col;
-                double tempVal = currentNode -> value;
 
-                currentNode -> row = swapNode -> row;
-                currentNode -> col = swapNode -> col;
-                currentNode -> value = swapNode -> value;
+     for(i = 0; i < myTuple -> nz; i++){
+         if(i != 0){
+             currentNode = currentNode -> next;
+         }
+         testNode = currentNode;
+         swapNode = currentNode;
+         for(sj = 0; j < myTuple -> nz; j++){
+             testNodeIndex = testNode -> row * myTuple -> m + testNode -> col;
+             swapNodeIndex = swapNode -> row * myTuple -> m + swapNode -> col;
+             if(testNodeIndex < swapNodeIndex){
+                 swapNode = testNode;
+             }
+             testNode = testNode -> next;
+             if(testNode == NULL){
+                 break;
+             }
+         }
 
-                swapNode -> row = tempRow;
-                swapNode -> col = tempCol;
-                swapNode -> value = tempVal;
-            //else, increment to the next possible node in the linked list
-            } else {
-                swapNode = swapNode -> next;
-            }
-        }
-    }
+         tempRow = currentNode -> row;
+         tempCol = currentNode -> col;
+         tempVal = currentNode -> value;
+
+         currentNode -> row = swapNode -> row;
+         currentNode -> col = swapNode -> col;
+         currentNode -> value = swapNode -> value;
+
+         swapNode -> row = tempRow;
+         swapNode -> col = tempCol;
+         swapNode -> value = tempVal;
+     }
     return myTuple;
 }
 
@@ -358,5 +353,46 @@ void destroy_tuples(sp_tuples * mat_t)
 
 
 
+// //currentNode keeps track of the current node that is being looked at in that moment of time
+//     sp_tuples_node * currentNode = myTuple -> tuples_head;
+//     //swapNode keeps track of the node to be swapped in that moment of time
+//     sp_tuples_node * swapNode = NULL;
+//     //testNode keeps track of the overall node from the head, to tail that is being checked for being in order
+//     sp_tuples_node * testedNode = myTuple -> tuples_head;
 
+//     //set up loop to overall loop through the whole tuple
+//     for(int i = 0; i < myTuple -> nz; i++){
+//         //if it isnt the first iteration, then increment the testedNode to the nextNode and set currentNode to that
+//         if(i != 0){
+//             testedNode = testedNode -> next;
+//             currentNode = testedNode;
+//         }
+//         //set swapNode which will go through the whole linked list to the beginning of the linked list
+//         swapNode = myTuple -> tuples_head;
+//         //loop through the linked list till NULL
+//         while(currentNode != NULL){
+//             //get the index of the current node (whatever node is being checked for, if 0th iteration then head node)
+//             int curNodeIndex = currentNode -> row * myTuple -> m + currentNode -> col;
+//             //get the index of the swap node, which is the head node on the 0th iteration
+//             int swapNodeIndex = swapNode -> row * myTuple -> m + swapNode -> col;
+//             //if the current node index > the index of the current node being checked, swap the values of those two nodes
+//             if(curNodeIndex > swapNodeIndex){
+//                 int tempRow = currentNode -> row;
+//                 int tempCol = currentNode -> col;
+//                 double tempVal = currentNode -> value;
+
+//                 currentNode -> row = swapNode -> row;
+//                 currentNode -> col = swapNode -> col;
+//                 currentNode -> value = swapNode -> value;
+
+//                 swapNode -> row = tempRow;
+//                 swapNode -> col = tempCol;
+//                 swapNode -> value = tempVal;
+//             //else, increment to the next possible node in the linked list
+//             } else {
+//                 swapNode = swapNode -> next;
+//             }
+//         }
+//     }
+//     return myTuple;
 
