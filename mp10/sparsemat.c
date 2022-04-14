@@ -1,10 +1,21 @@
-#include "sparsemat.h"
+/**
+ * This program is made to allow one to represent non zeroes value of sparse matrices as nodes of a linked list
+ * and perform operations like addition, and changing/adding/modifying nodes in the list. The first function 
+ * load_tuples loads the values from an input file and creates nodes based on the values passed in through the input
+ * file through the use of set_tuples. The function gv_tuples acts as a function that indicates whether or not
+ * a node exists at a given row and column by looping through the linked list and verifying. set_tuples adds a node
+ * to the linked list given a row and column if it doesn't already exist, or modifies the value in the list by
+ * removing or modifying nodes and rearranging the pointers of the nodes. save_tuples saves a modified tuple 
+ * and the values associated with it to a file with identical formatting to the input file. add_tuples adds two
+ * given tuples to each other and creates a linked list of all new added non-zero values. Finally, destroy_tuples
+ * gets rid of associated memory with the tuple and the nodes attatched to it. Overall, this MP solidified my
+ * understanding of pointers and how they can be used to create "strings" of associated nodes that store data
+ * efficiently.
+ */
 
+#include "sparsemat.h"
 #include <stdio.h>
 #include <stdlib.h>
-
-
-
 
 //DONE
 sp_tuples * load_tuples(char* input_file)
