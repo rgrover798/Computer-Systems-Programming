@@ -27,31 +27,33 @@ sp_tuples * load_tuples(char* input_file)
     sp_tuples * myTuple = malloc(sizeof(sp_tuples));
     myTuple -> m = rows;
     myTuple -> n = cols;
+    myTuple -> nz = 0;
+    myTuple -> tuples_head = NULL;
 
     //initialize head node and next node. head node always points to null
-    sp_tuples_node * headNode = NULL;
-    sp_tuples_node * nextNode = NULL;
+    //sp_tuples_node * headNode = NULL;
+    //sp_tuples_node * nextNode = NULL;
 
     //loop through file to EOF is reached
     while(fscanf(myfile, "%d %d %lf", &rowIndex, &colIndex, &val) != EOF){
-        //if val = 0 skip to next line
-        if(val != 0){
-            //allocate memory for the nextnode and set values of nextNode
-            nextNode = malloc(sizeof(sp_tuples_node));
-            nextNode -> row = rowIndex;
-            nextNode -> col = colIndex;
-            nextNode -> value = val;
-            //point to headNode (aka NULL for the first term) since it is put at the end of the linked list
-            nextNode -> next = headNode;
-            myTuple -> nz += 1;
-            //set headNode equal to the nextNode to save pointer to the nextNode
-            headNode = nextNode;
-        }  
+        set_tuples(myTuple, rowIndex, colIndex, val);
+        // if(val != 0){
+        //     //allocate memory for the nextnode and set values of nextNode
+        //     nextNode = malloc(sizeof(sp_tuples_node));
+        //     nextNode -> row = rowIndex;
+        //     nextNode -> col = colIndex;
+        //     nextNode -> value = val;
+        //     //point to headNode (aka NULL for the first term) since it is put at the end of the linked list
+        //     nextNode -> next = headNode;
+        //     myTuple -> nz += 1;
+        //     //set headNode equal to the nextNode to save pointer to the nextNode
+        //     headNode = nextNode;
+        // }  
     } 
 
     //close file and set tuple head to headNode
     fclose(myfile);
-    myTuple -> tuples_head = headNode;
+    //myTuple -> tuples_head = headNode;
 
     /*
      * -----------
@@ -60,42 +62,42 @@ sp_tuples * load_tuples(char* input_file)
      */
 
     //variables (some are temporary) for swapping in insertion sort as well as looping
-    int tempRow, tempCol, testNodeIndex, swapNodeIndex, i, j;
-    double tempVal;
-    sp_tuples_node * currentNode = myTuple -> tuples_head;
-    sp_tuples_node * testNode, * swapNode;
+    // int tempRow, tempCol, testNodeIndex, swapNodeIndex, i, j;
+    // double tempVal;
+    // sp_tuples_node * currentNode = myTuple -> tuples_head;
+    // sp_tuples_node * testNode, * swapNode;
 
-    //insertion sort through linked list to sort values
-     for(i = 0; i < myTuple -> nz; i++){
-         if(i != 0){
-             currentNode = currentNode -> next;
-         }
-         testNode = currentNode;
-         swapNode = currentNode;
-         for(j = 0; j < myTuple -> nz; j++){
-             testNodeIndex = testNode -> row * myTuple -> m + testNode -> col;
-             swapNodeIndex = swapNode -> row * myTuple -> m + swapNode -> col;
-             if(testNodeIndex < swapNodeIndex){
-                 swapNode = testNode;
-             }
-             testNode = testNode -> next;
-             if(testNode == NULL){
-                 break;
-             }
-         }
+    // //insertion sort through linked list to sort values
+    //  for(i = 0; i < myTuple -> nz; i++){
+    //      if(i != 0){
+    //          currentNode = currentNode -> next;
+    //      }
+    //      testNode = currentNode;
+    //      swapNode = currentNode;
+    //      for(j = 0; j < myTuple -> nz; j++){
+    //          testNodeIndex = testNode -> row * myTuple -> m + testNode -> col;
+    //          swapNodeIndex = swapNode -> row * myTuple -> m + swapNode -> col;
+    //          if(testNodeIndex < swapNodeIndex){
+    //              swapNode = testNode;
+    //          }
+    //          testNode = testNode -> next;
+    //          if(testNode == NULL){
+    //              break;
+    //          }
+    //      }
 
-         tempRow = currentNode -> row;
-         tempCol = currentNode -> col;
-         tempVal = currentNode -> value;
+    //      tempRow = currentNode -> row;
+    //      tempCol = currentNode -> col;
+    //      tempVal = currentNode -> value;
 
-         currentNode -> row = swapNode -> row;
-         currentNode -> col = swapNode -> col;
-         currentNode -> value = swapNode -> value;
+    //      currentNode -> row = swapNode -> row;
+    //      currentNode -> col = swapNode -> col;
+    //      currentNode -> value = swapNode -> value;
 
-         swapNode -> row = tempRow;
-         swapNode -> col = tempCol;
-         swapNode -> value = tempVal;
-     }
+    //      swapNode -> row = tempRow;
+    //      swapNode -> col = tempCol;
+    //      swapNode -> value = tempVal;
+    //  }
     return myTuple;
 }
 
@@ -143,10 +145,9 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
                     mat_t -> nz -= 1;
                     break;
                 }
-            } else {
-                prevNode = currentNode;
-                currentNode = currentNode -> next;
             }
+            prevNode = currentNode;
+            currentNode = currentNode -> next;
         }
     }
 
@@ -172,25 +173,36 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
             int curNodeIndex = currentNode -> row * mat_t -> m + currentNode -> col;
             int swapNodeIndex = row * mat_t -> m + col;
             if(prevNode == NULL && curNodeIndex > swapNodeIndex){
-                sp_tuples_node * newHead = malloc(sizeof(sp_tuples_node));
-                newHead -> row = row;
-                newHead -> col = col;
-                newHead -> value = value;
-                mat_t -> tuples_head = newHead;
-                newHead -> next = currentNode; 
+                sp_tuples_node * newNode = malloc(sizeof(sp_tuples_node));
+                newNode -> row = row;
+                newNode -> col = col;
+                newNode -> value = value;
+                mat_t -> tuples_head = newNode;
+                newNode -> next = currentNode; 
                 mat_t -> nz += 1;
                 break;
-            } else {
-                if(curNodeIndex > swapNodeIndex){
-                    sp_tuples_node * newNode = malloc(sizeof(sp_tuples_node));
-                    newNode -> row = row;
-                    newNode -> col = col;
-                    newNode -> value = value;
-                    newNode -> next = currentNode;
-                    prevNode -> next = newNode;
-                    mat_t -> nz += 1;
-                    break;
-                }
+            } 
+
+            if(prevNode != NULL && curNodeIndex > swapNodeIndex){
+                sp_tuples_node * newNode = malloc(sizeof(sp_tuples_node));
+                newNode -> row = row;
+                newNode -> col = col;
+                newNode -> value = value;
+                newNode -> next = currentNode;
+                prevNode -> next = newNode;
+                mat_t -> nz += 1;
+                break;
+            } 
+
+            if(currentNode -> next == NULL){
+                sp_tuples_node * newNode = malloc(sizeof(sp_tuples_node));
+                newNode -> row = row;
+                newNode -> col = col;
+                newNode -> value = value;
+                currentNode -> next = newNode;
+                newNode -> next = NULL;
+                mat_t -> nz += 1;
+                break;
             }
             prevNode = currentNode;
             currentNode = currentNode -> next;
@@ -198,11 +210,12 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
         //case if matrix is empty
         if(mat_t -> tuples_head == NULL){
             sp_tuples_node * newNode = malloc(sizeof(sp_tuples_node));
-                    newNode -> row = row;
-                    newNode -> col = col;
-                    newNode -> value = value;
-                    newNode -> next = NULL;
-                    mat_t -> nz += 1;
+            newNode -> row = row;
+            newNode -> col = col;
+            newNode -> value = value;
+            newNode -> next = NULL;
+            mat_t -> tuples_head = newNode;
+            mat_t -> nz += 1;
         }
     }
     
@@ -263,10 +276,10 @@ sp_tuples * add_tuples(sp_tuples * matA, sp_tuples * matB)
         }
 
         //do the same for linked list B. If a value already exists add it to the corresponding coordinates in C
-        int sum;
+        double sum;
         while(currentNodeB != NULL){
             //if node already doesn't exist, just add the node to linked list
-            if(gv_tuples(matC, currentNodeB -> row, currentNodeB -> col) != 0){
+            if(gv_tuples(matC, currentNodeB -> row, currentNodeB -> col) == 0){
                 set_tuples(matC, currentNodeB -> row, currentNodeB -> col, currentNodeB -> value);
             //case for if node already exists
             } else {
