@@ -9,11 +9,6 @@
 //DONE
 sp_tuples * load_tuples(char* input_file)
 {
-    /*
-     * ---------
-     * GET NODES 
-     * ---------
-     */
     //initialize variables
     int rows, cols;
     int rowIndex, colIndex;
@@ -22,7 +17,7 @@ sp_tuples * load_tuples(char* input_file)
     //start file
     FILE * myfile = fopen(input_file, "r");
 
-    //set rows and cols of tuple
+    //set rows and cols of tuple, set nz to 0 and tuples_head to NULL
     fscanf(myfile, "%d %d", &rows, &cols);
     sp_tuples * myTuple = malloc(sizeof(sp_tuples));
     myTuple -> m = rows;
@@ -30,74 +25,14 @@ sp_tuples * load_tuples(char* input_file)
     myTuple -> nz = 0;
     myTuple -> tuples_head = NULL;
 
-    //initialize head node and next node. head node always points to null
-    //sp_tuples_node * headNode = NULL;
-    //sp_tuples_node * nextNode = NULL;
-
     //loop through file to EOF is reached
     while(fscanf(myfile, "%d %d %lf", &rowIndex, &colIndex, &val) != EOF){
-        set_tuples(myTuple, rowIndex, colIndex, val);
-        // if(val != 0){
-        //     //allocate memory for the nextnode and set values of nextNode
-        //     nextNode = malloc(sizeof(sp_tuples_node));
-        //     nextNode -> row = rowIndex;
-        //     nextNode -> col = colIndex;
-        //     nextNode -> value = val;
-        //     //point to headNode (aka NULL for the first term) since it is put at the end of the linked list
-        //     nextNode -> next = headNode;
-        //     myTuple -> nz += 1;
-        //     //set headNode equal to the nextNode to save pointer to the nextNode
-        //     headNode = nextNode;
-        // }  
+        //set each input as a node to the tuple
+        set_tuples(myTuple, rowIndex, colIndex, val);  
     } 
 
-    //close file and set tuple head to headNode
+    //close file
     fclose(myfile);
-    //myTuple -> tuples_head = headNode;
-
-    /*
-     * -----------
-     * ORDER NODES
-     * -----------
-     */
-
-    //variables (some are temporary) for swapping in insertion sort as well as looping
-    // int tempRow, tempCol, testNodeIndex, swapNodeIndex, i, j;
-    // double tempVal;
-    // sp_tuples_node * currentNode = myTuple -> tuples_head;
-    // sp_tuples_node * testNode, * swapNode;
-
-    // //insertion sort through linked list to sort values
-    //  for(i = 0; i < myTuple -> nz; i++){
-    //      if(i != 0){
-    //          currentNode = currentNode -> next;
-    //      }
-    //      testNode = currentNode;
-    //      swapNode = currentNode;
-    //      for(j = 0; j < myTuple -> nz; j++){
-    //          testNodeIndex = testNode -> row * myTuple -> m + testNode -> col;
-    //          swapNodeIndex = swapNode -> row * myTuple -> m + swapNode -> col;
-    //          if(testNodeIndex < swapNodeIndex){
-    //              swapNode = testNode;
-    //          }
-    //          testNode = testNode -> next;
-    //          if(testNode == NULL){
-    //              break;
-    //          }
-    //      }
-
-    //      tempRow = currentNode -> row;
-    //      tempCol = currentNode -> col;
-    //      tempVal = currentNode -> value;
-
-    //      currentNode -> row = swapNode -> row;
-    //      currentNode -> col = swapNode -> col;
-    //      currentNode -> value = swapNode -> value;
-
-    //      swapNode -> row = tempRow;
-    //      swapNode -> col = tempCol;
-    //      swapNode -> value = tempVal;
-    //  }
     return myTuple;
 }
 
@@ -121,23 +56,28 @@ double gv_tuples(sp_tuples * mat_t,int row,int col)
 }
 
 
-//read over but not DONE
+//DONE
 void set_tuples(sp_tuples * mat_t, int row, int col, double value)
 {
+    //keeps track of current node as well has previous and next
     sp_tuples_node * currentNode = mat_t -> tuples_head;
     sp_tuples_node * prevNode = NULL, * nextNode = NULL;
 
     //case if input value is 0
     if(value == 0 && gv_tuples(mat_t, row, col) != 0){
+        //check if matrix is empty
         while(currentNode != NULL){
             nextNode = currentNode -> next;
+            //check if row and column match
             if(currentNode -> row == row && currentNode -> col == col){
+                //check if matrix only has one entry, if so, free that one entry and set end to NULL and decrement
                 if(prevNode == NULL){
                     mat_t -> tuples_head = nextNode;
                     free(currentNode);
                     currentNode = NULL;
                     mat_t -> nz -= 1;
                     break;
+                //else, free node and rearrange pointers, set free'd node to NULL and decrement
                 } else {
                     prevNode -> next = nextNode;
                     free(currentNode);
@@ -146,7 +86,9 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
                     break;
                 }
             }
+            //replace prevNode with currentNode to update what the previous node is
             prevNode = currentNode;
+            //go to next node
             currentNode = currentNode -> next;
         }
     }
@@ -154,11 +96,15 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
     //case if input value is non-zero and node exists 
     if(value != 0 && gv_tuples(mat_t, row, col) != 0){
         currentNode = mat_t -> tuples_head;
+        //loop till end of linked-list is reached
         while(currentNode != NULL){
+            //check if row and col match
             if(currentNode -> row == row && currentNode -> col == col){
+                //update value and break
                 currentNode -> value = value;
                 break;
             } else {
+                //increment to next node
                 currentNode = currentNode -> next;
             }
         } 
@@ -169,10 +115,14 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
         //case if matrix is non empty
         currentNode = mat_t -> tuples_head;
         prevNode = NULL;
+        //check if currentNode is not NULL (not empty matrix)
         while(currentNode != NULL){
+            //get current index and index you want to swap
             int curNodeIndex = currentNode -> row * mat_t -> m + currentNode -> col;
             int swapNodeIndex = row * mat_t -> m + col;
+            //compare indices and check if prevNode is NULL (beginning of matrix)
             if(prevNode == NULL && curNodeIndex > swapNodeIndex){
+                //if so, create new header node and rearrange pointers, and increment, then break
                 sp_tuples_node * newNode = malloc(sizeof(sp_tuples_node));
                 newNode -> row = row;
                 newNode -> col = col;
@@ -182,7 +132,8 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
                 mat_t -> nz += 1;
                 break;
             } 
-
+            //if it isn't the beginning of matrix and the swapNode index is smaller
+            //place new node right behind current node and rearrange pointers. Increment and then break
             if(prevNode != NULL && curNodeIndex > swapNodeIndex){
                 sp_tuples_node * newNode = malloc(sizeof(sp_tuples_node));
                 newNode -> row = row;
@@ -194,6 +145,8 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
                 break;
             } 
 
+            //if it is the end of the matrix, add the new node to the end of the matrix
+            //rearrange pointers and increment non zeros
             if(currentNode -> next == NULL){
                 sp_tuples_node * newNode = malloc(sizeof(sp_tuples_node));
                 newNode -> row = row;
@@ -204,11 +157,13 @@ void set_tuples(sp_tuples * mat_t, int row, int col, double value)
                 mat_t -> nz += 1;
                 break;
             }
+            //unconditionally set previous node to be the current node and jump to next node in list
             prevNode = currentNode;
             currentNode = currentNode -> next;
         }
         //case if matrix is empty
         if(mat_t -> tuples_head == NULL){
+            //create new tuple_head node and increment nz
             sp_tuples_node * newNode = malloc(sizeof(sp_tuples_node));
             newNode -> row = row;
             newNode -> col = col;
@@ -254,10 +209,12 @@ void save_tuples(char * file_name, sp_tuples * mat_t)
 }
 
 
-
+//DONE
 sp_tuples * add_tuples(sp_tuples * matA, sp_tuples * matB)
 {
+    //create new matrix C to store summation
     sp_tuples * matC = NULL;
+    //check if matrices are valid, if so, begin construction of matC based on A and B
     if(matA -> m == matB -> m && matA -> n == matB -> n && matA != NULL && matB != NULL){
         matC = malloc(sizeof(sp_tuples));
         matC -> m = matA -> m;
@@ -265,8 +222,11 @@ sp_tuples * add_tuples(sp_tuples * matA, sp_tuples * matB)
         matC -> nz = 0;
         matC -> tuples_head = NULL;
 
+        //use currentNodeA to store current location in linked list A
         sp_tuples_node * currentNodeA = matA -> tuples_head;
+        //use currentNodeB to store current location in linked list B
         sp_tuples_node * currentNodeB = matB -> tuples_head;
+        //use currentNode to track progress through linked list C
         sp_tuples_node * currentNode = NULL;
 
         //add every value of linked list A to linked list C using set_tuples
@@ -284,18 +244,23 @@ sp_tuples * add_tuples(sp_tuples * matA, sp_tuples * matB)
             //case for if node already exists
             } else {
                 currentNode = matC -> tuples_head;
+                //loop through list till end is reached
                 while(currentNode != NULL){
+                    //if row and col match, get sum and set corresponding row and col in C to this sum then break
                     if(currentNodeB -> row == currentNode -> row && currentNodeB -> col == currentNode -> col){
                         sum = currentNode -> value + currentNodeB -> value;
                         set_tuples(matC, currentNodeB -> row, currentNodeB -> col, sum);
                         break;
                     }
+                    //if it doesn't match, go to next node
                     currentNode = currentNode -> next;
                 }
             }
+            //unconditonally go to next node for B to add it to C
             currentNodeB = currentNodeB -> next;
         }
     } 
+    //if matC is not NULL, return it
     if(matC != NULL){
         return matC;
     }
@@ -310,7 +275,7 @@ sp_tuples * mult_tuples(sp_tuples * matA, sp_tuples * matB)
     return NULL; 
 }
 
-
+//DONE
 //free accordingly, each node, then matrix overall
 void destroy_tuples(sp_tuples * mat_t)
 {
@@ -334,6 +299,7 @@ void destroy_tuples(sp_tuples * mat_t)
  * BELOW ARE FUNCTIONS THAT I USED TO USE BUT THE CODE DIDN'T WORK SO I REWROTE
  * ----------------------------------------------------------------------------
  */
+// 1st Old Function: OLD function for set_tuples
 // if(value == 0){
 //         while(currentNode != NULL){
 //             nextNode = currentNode -> next;
@@ -397,7 +363,7 @@ void destroy_tuples(sp_tuples * mat_t)
 //     }
 
 
-
+//2nd Old Function: Old function for sorting algorithm
 // //currentNode keeps track of the current node that is being looked at in that moment of time
 //     sp_tuples_node * currentNode = myTuple -> tuples_head;
 //     //swapNode keeps track of the node to be swapped in that moment of time
@@ -441,6 +407,7 @@ void destroy_tuples(sp_tuples * mat_t)
 //     }
 //     return myTuple;
 
+// 3rd Old Function: Old function for adding two matrices
 // int curRowA, curColA, curRowB, curColB, i, j, sum;
 //         for(i = 0; i < matA -> nz; i++){
 //             currentNodeB = matB -> tuples_head;
@@ -482,3 +449,65 @@ void destroy_tuples(sp_tuples * mat_t)
 //             }
 //             currentNodeA = currentNodeA -> next;
 //         }
+
+//4th old function: Old function for getting input from file
+//sp_tuples_node * headNode = NULL;
+//sp_tuples_node * nextNode = NULL;
+// if(val != 0){
+        //     //allocate memory for the nextnode and set values of nextNode
+        //     nextNode = malloc(sizeof(sp_tuples_node));
+        //     nextNode -> row = rowIndex;
+        //     nextNode -> col = colIndex;
+        //     nextNode -> value = val;
+        //     //point to headNode (aka NULL for the first term) since it is put at the end of the linked list
+        //     nextNode -> next = headNode;
+        //     myTuple -> nz += 1;
+        //     //set headNode equal to the nextNode to save pointer to the nextNode
+        //     headNode = nextNode;
+        // }
+//myTuple -> tuples_head = headNode;
+
+//5th Old Function: Old function for sorting nodes
+/*
+     * -----------
+     * ORDER NODES
+     * -----------
+     */
+
+    //variables (some are temporary) for swapping in insertion sort as well as looping
+    // int tempRow, tempCol, testNodeIndex, swapNodeIndex, i, j;
+    // double tempVal;
+    // sp_tuples_node * currentNode = myTuple -> tuples_head;
+    // sp_tuples_node * testNode, * swapNode;
+
+    // //insertion sort through linked list to sort values
+    //  for(i = 0; i < myTuple -> nz; i++){
+    //      if(i != 0){
+    //          currentNode = currentNode -> next;
+    //      }
+    //      testNode = currentNode;
+    //      swapNode = currentNode;
+    //      for(j = 0; j < myTuple -> nz; j++){
+    //          testNodeIndex = testNode -> row * myTuple -> m + testNode -> col;
+    //          swapNodeIndex = swapNode -> row * myTuple -> m + swapNode -> col;
+    //          if(testNodeIndex < swapNodeIndex){
+    //              swapNode = testNode;
+    //          }
+    //          testNode = testNode -> next;
+    //          if(testNode == NULL){
+    //              break;
+    //          }
+    //      }
+
+    //      tempRow = currentNode -> row;
+    //      tempCol = currentNode -> col;
+    //      tempVal = currentNode -> value;
+
+    //      currentNode -> row = swapNode -> row;
+    //      currentNode -> col = swapNode -> col;
+    //      currentNode -> value = swapNode -> value;
+
+    //      swapNode -> row = tempRow;
+    //      swapNode -> col = tempCol;
+    //      swapNode -> value = tempVal;
+    //  }
