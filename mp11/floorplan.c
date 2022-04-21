@@ -79,7 +79,7 @@ int is_in_subtree(node_t* a, node_t* b) {
   node_t * curNode = a;
   if(curNode == NULL){
     return 0;
-  } else if(curNode == b || is_in_subtree(curNode -> right, b) == b || is_in_subtree(curNode -> left, b) == b){
+  } else if(curNode == b || is_in_subtree(curNode -> right, b) == 1 || is_in_subtree(curNode -> left, b) == 1){
     return 1;
   }
   return 0;
@@ -106,9 +106,9 @@ void recut(node_t* ptr) {
 
   // TODO:
   if(ptr -> cutline == V){
-    ptr -> cutline == H;
+    ptr -> cutline = H;
   } else if (ptr -> cutline == H){
-    ptr -> cutline == V;
+    ptr -> cutline = V;
   }
   return;
 }
@@ -206,7 +206,7 @@ int get_total_resource(node_t* ptr)
 {
   // TODO:
   int total = 0;
-  while(ptr != NULL){
+  if(ptr != NULL){
     if(is_leaf_node(ptr)){
       total += ptr -> module -> resource;
     } 
@@ -243,7 +243,7 @@ int get_total_resource(node_t* ptr)
 // indicating the depth of the current recursion and the index of the module array to which the
 // module pointer of the leave node should point to.
 //
-node_t* init_slicing_tree(node_t* par, int n) {
+node_t* init_slicing_tree(node_t* par, int n){
   
   assert(n >= 0 && n < num_modules);
 
@@ -254,37 +254,43 @@ node_t* init_slicing_tree(node_t* par, int n) {
     childNode1 -> module = &modules[n];
     childNode1 -> cutline = UNDEFINED_CUTLINE;
     childNode1 -> left = NULL;
-    childNode1 -> right == NULL;
+    childNode1 -> right = NULL;
 
     node_t * childNode2 = (node_t *) malloc(sizeof(node_t));
     childNode2 -> parent = par;
     childNode2 -> module = &modules[n - 1];
     childNode2 -> cutline = UNDEFINED_CUTLINE;
     childNode2 -> left = NULL;
-    childNode2 -> right == NULL;
+    childNode2 -> right = NULL;
 
     par -> left = childNode1;
     par -> right = childNode2;
 
     return childNode1;
   } else {
-    //left node
     node_t * nextParent = (node_t *) malloc(sizeof(node_t));
-    nextParent -> parent = par;
-    nextParent -> module = NULL;
-    nextParent -> cutline = V;
-    //right node
-    node_t * childNode = (node_t *) malloc(sizeof(node_t));
-    childNode -> parent = par;
-    childNode -> module = &modules[n - 1];
-    childNode -> cutline = UNDEFINED_CUTLINE;
-    childNode -> left = NULL;
-    childNode -> right == NULL;
+    if(par == NULL){
+      nextParent -> parent = par;
+      nextParent -> module = NULL;
+      nextParent -> cutline = V;
+    } else {
+      //left node
+      nextParent -> parent = par;
+      nextParent -> module = NULL;
+      nextParent -> cutline = V;
+      //right node
+      node_t * childNode = (node_t *) malloc(sizeof(node_t));
+      childNode -> parent = par;
+      childNode -> module = &modules[n - 1];
+      childNode -> cutline = UNDEFINED_CUTLINE;
+      childNode -> left = NULL;
+      childNode -> right = NULL;
 
-    par -> left == nextParent;  
-    par -> right == childNode;
+      par -> left = nextParent;  
+      par -> right = childNode;
+    }
 
-    init_slicing_tree(nextParent, n);
+    init_slicing_tree(nextParent, n+1);
     return nextParent;
 
   }
