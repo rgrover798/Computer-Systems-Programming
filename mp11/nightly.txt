@@ -1,33 +1,42 @@
 Compilation Results:
 ********************
+floorplan.c: In function ‘int is_in_subtree(node_t*, node_t*)’:
+floorplan.c:82:67: error: ISO C++ forbids comparison between pointer and integer [-fpermissive]
+   } else if(curNode == b || is_in_subtree(curNode -> right, b) == b || is_in_subtree(curNode -> left, b) == b){
+                                                                   ^
+floorplan.c:82:109: error: ISO C++ forbids comparison between pointer and integer [-fpermissive]
+   } else if(curNode == b || is_in_subtree(curNode -> right, b) == b || is_in_subtree(curNode -> left, b) == b){
+                                                                                                             ^
+floorplan.c: In function ‘void recut(node_t*)’:
+floorplan.c:109:20: warning: statement has no effect [-Wunused-value]
+     ptr -> cutline == H;
+                    ^
+floorplan.c:111:20: warning: statement has no effect [-Wunused-value]
+     ptr -> cutline == V;
+                    ^
+floorplan.c: In function ‘node_t* init_slicing_tree(node_t*, int)’:
+floorplan.c:257:25: warning: statement has no effect [-Wunused-value]
+     childNode1 -> right == NULL;
+                         ^
+floorplan.c:264:25: warning: statement has no effect [-Wunused-value]
+     childNode2 -> right == NULL;
+                         ^
+floorplan.c:282:24: warning: statement has no effect [-Wunused-value]
+     childNode -> right == NULL;
+                        ^
+floorplan.c:284:17: warning: statement has no effect [-Wunused-value]
+     par -> left == nextParent;  
+                 ^
+floorplan.c:285:18: warning: statement has no effect [-Wunused-value]
+     par -> right == childNode;
+                  ^
+make: *** [floorplanner] Error 1
 
-./floorplanner grade/circuit1.txt
-
-****************************** VERIFICATION ******************************
-Circuit: 4 golden_modules, slicing tree size = 4 leaves and 3 internals
-(1) Function  'init_slicing_tree' : incorrect! +0
-    Golden: 32V1V0V
-    Yours : Invalid expression. Can't print. Please check your get_expression procedure.
-(2) Function  'is_leaf'           : incorrect! +0
-(3) Function  'is_internal'       : incorrect! +0
-(4) Function  'is_in_subtree'     : incorrect! +0
-(5) Procedure 'rotate'            : incorrect! +0
-(6) Procedure 'recut'             : incorrect! +0
-(7) Procedure 'swap_module'       : incorrect! +0
-(8) Procedure 'swap_topology'     : incorrect! +0
-(9) Procedure 'get_expression'    : incorrect! +0
-    Golden: 32V1V0V
-    Yours : Invalid expression. Can't print. Please check your get_expression procedure.
-(10)Procedure 'get_total_resource': incorrect! +0
-    Golden: Total_resource = 16
-    Yours : Total_resource = 0
-Your final score for this MP      : 0
-**************************** END VERIFICATION ****************************
-
+g++ -Wall -O3 -c floorplan.c -o floorplan.o
 
 Failed the nightly test.
 This nightly test is focusing on compilation error not functionality test.
 This nightly report only tests on the released testcases.
 There are many hidden edge testcase for the MP. Please test it yourselve.
 HIGHLY RECOMMEND YOU TO START YOUR MP EARLY!!!!!!!
-Timestamp: 2022-04-20_00:21:10
+Timestamp: 2022-04-21_00:20:59
