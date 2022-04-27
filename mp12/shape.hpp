@@ -223,16 +223,16 @@ private:
 static list<Shape*> CreateShapes(char* file_name) {
 	//@@Insert your code here
 	list<Shape *> shapes;
-	int size, i;
+	int size;
 	double in1, in2, in3;
 	string type;
-	ifstream ifs ("file_name", std::ifstream::in);
+	ifstream ifs (file_name, std::ifstream::in);
 	ifs >> size;
-	while(i != 0){
+	while(size != 0){
 		Shape * temp;
 		ifs >> type;
 		if(type == "Rectangle"){
-			ifs >> in1, in2;
+			ifs >> in1 >> in2;
 			temp = new Rectangle<double>(in1, in2);
 		} else if(type == "Circle"){
 			ifs >> in1;
@@ -241,13 +241,13 @@ static list<Shape*> CreateShapes(char* file_name) {
 			ifs >> in1;
 			temp = new Sphere(in1);
 		} else if(type == "RectPrism"){
-			ifs >> in1, in2, in3;
+			ifs >> in1 >> in2 >> in3;
 			temp = new RectPrism(in1, in2, in3);
 		}
 		shapes.push_back(temp);
-		i--;
+		size--;
 	}
-	
+	ifs.close();
 	return shapes;
 }
 
@@ -256,10 +256,14 @@ static list<Shape*> CreateShapes(char* file_name) {
 static double MaxArea(list<Shape*> shapes){
 	double max_area = 0;
 	//@@Insert your code here
-	list<Shape*>::iterator i;
-	for(i = shapes.begin(); i != shapes.end(); i++){
-		if((*i) -> getArea() > max_area){
-			max_area = (*i) -> getArea();
+	double value;
+	list<Shape*>::iterator it;
+	for(it = shapes.begin(); it != shapes.end(); it++){
+		if((*it) != NULL){
+			value = (*it) -> getArea();
+			if(value > max_area){
+				max_area = value;
+			}
 		}
 	}
 	
@@ -271,10 +275,14 @@ static double MaxArea(list<Shape*> shapes){
 static double MaxVolume(list<Shape*> shapes){
 	double max_volume = 0;
 	//@@Insert your code here
-	list<Shape*>::iterator i;
-	for(i = shapes.begin(); i != shapes.end(); i++){
-		if((*i) -> getVolume() > max_volume){
-			max_volume = (*i) -> getVolume();
+	double value;
+	list<Shape*>::iterator it;
+	for(it = shapes.begin(); it != shapes.end(); it++){
+		if((*it) != NULL){
+			value = (*it) -> getVolume();
+			if(value > max_volume){
+				max_volume = value;
+			}
 		}
 	}
 	
